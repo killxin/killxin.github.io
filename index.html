@@ -1,129 +1,23 @@
-﻿<!DOCTYPE html>
-<head>
-<meta http-equiv="content-type" content="text/html; charset=utf-8">
-<style>
-h1{
-color: #fff;
-font-size: 50px;
-letter-spacing: 1px;
-line-height: 1em;
-font-family: "微软雅黑";
-}
-h2{ 
-font-family: "仿宋";
-font-size: 40px;
-color: #fff;
-}
-h3{
-background: #ea2e49;
-color: #fff;
-display: inline-block;
-margin-bottom: 1em;
-padding: 0.5em 1em; 
-font-family: "仿宋";
-font-size: 30px;
-}
-h4{
-font-family: "微软雅黑";
-font-size: 20px;
-}
-html{ 
-background: #daede2;
-padding: 5%; 
-}
-body{
-background: #77c4d3; 
-height: 1150px;
-}
-.intro{ 
-padding:5%; 
-}
-.summary { 
-font-family: "楷体";
-font-size: 20px;
-color: #333;
-width:70%;
-padding-bottom: 50px;
-border-bottom: 5px dotted #ea2e49;
-}
-.sidebar {
-position: absolute;
-right: 20%;
-top: 5%;
-}
-.skills{
-background: #fff;
-color: #333;
-margin-left: -10%;
-margin-right: 15%;
-padding: 2% 5% 2% 15%;
-font-size: 20px;
-}
-.inschool{
-background: #77c4d3; 
-float: left;
-width: 45%;
-padding: 0 5% 5% 5%;
-font-size: 20px;
-color: #333;
-}
-.awards{
-float: left;
-width: 30%;
-background: #ea2e49;
-color: #fff;
-padding: 5% 5%;
-font-size: 20px;
-margin=top: 10%;
-}
-</style>
-</head>
-<body>
-	<div class="wrapper">
-		<div class="intro">
-			<h3>简历</h3>
-			<h1>姜人和 21岁</h1>		
-			<p class="summary">
-				电话:15951936399<br/>
-				邮箱:131220105@smail.nju.edu.cn<br/>
-				就读院校：南京大学计算机科学与技术系<br/> 
-				毕业时间：2017年6月
-			</p>
-			<h2>应聘岗位：软件开发</h2>
-			<aside class="sidebar" role="complementary">
-				<img src="photo.JPG" width="200px" height="300px" alt="此处为照片" />
-			</aside>
-		</div>
-		<div class="skills">
-			<h4>专业技能</h4>
-			<ul>
-				<li>github账号：killxin，下述部分成果可在https://github.com/killxin处获得</li>
-				<li>主修计算机科学方向，在计算理论、算法设计分析、编译、组合数学、概率论等领域有所长</li>
-				<li>掌握C++，Java语言编程，web开发技术，曾开发过类似于IFTTT的小型网站，象棋小游戏</li>
-				<li>担任“基于NoSQL的代码库构造”创新项目负责人，对Java代码的AST结构进行过深入调研，开发出基于Neo4j的Java代码库构造引擎JINX，享有软件著作权 5、在课程实习中曾实现过类似于qemu的模拟器nemu，简易操作系统，针对简化版本的C语言的编译器</li>
-				<li>在课程实习中曾实现过类似于qemu的模拟器nemu，简易操作系统，针对简化版本的C语言的编译器</li>
-				<li>接触过各类软件开发工具，对自身团队协作能力有自信</li>
-			</ul>
-		</div>
-		<div style="padding:2% 0;">
-			<div class="inschool">
-				<h4>在校情况</h4>
-				<ul>
-					<li>学分绩:4.31/5.0，排名21/150</li>
-					<li>英语水平:四级成绩615，六级成绩532</li>
-					<li>曾在系学生会杂志社任职，参与2本纸质杂志，1本电子杂志的制作</li>
-					<li>担任13级团总支书记，学代会的计算机系学生代表</li>
-				</ol>
-			</div>
-			<div class="awards">
-				<h4>获奖情况</h4>
-				<ul>
-					<li>连续两年获得人民奖学金二等奖</li>
-					<li>2014年南京青奥会宣传文化之星</li>
-					<li>校级优秀学生、系优秀共青团员</li>
-					<li>计算机系优秀暑期实践团队</li>
-				</ol>
-			</div>
-		</div>
-	</div>
-</body>
+---
+layout: default
+---
+
+<div class="home">
+
+  <h1 class="page-heading">Posts</h1>
+
+  <ul class="post-list">
+    {% for post in site.posts %}
+      <li>
+        <span class="post-meta">{{ post.date | date: "%b %-d, %Y" }}</span>
+
+        <h2>
+          <a class="post-link" href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
+        </h2>
+      </li>
+    {% endfor %}
+  </ul>
+
+  <p class="rss-subscribe">subscribe <a href="{{ "/feed.xml" | prepend: site.baseurl }}">via RSS</a></p>
+
+</div>

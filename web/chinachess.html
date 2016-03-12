@@ -1,0 +1,537 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+<script>
+var choosen_id;
+function draw_map(){
+	var $map = $("table.map");
+	for(var i=0;i<9;i++){
+		var $row = $("<tr></tr>");
+		$map.append($row);
+		for(var j=0;j<8;j++){
+			$col = $("<td></td>");
+			if(i==4)$col.addClass("border");
+			$row.append($col);
+		}
+	}
+};
+function draw_soldier(){
+	var black = new Array("车","马","象","士","将","炮","卒");
+	var red = new Array("车","马","相","仕","帅","炮","兵");
+	var $game = $("div.game");
+	var id = 0;
+	for(var i=0;i<9;i++){
+		var k = (i<5)?i:8-i;
+		$game.append(
+			$("<span class='black_"+k+"' id='black_"+id+"'>"+black[k]+"</span>").css({	
+				"top": "60px",
+				"left": (120+i*60)+"px"
+			})
+		);
+		$game.append(
+			$("<span class='red_"+k+"' id='red_"+id+"'>"+red[k]+"</span>").css({	
+				"top": "600px",
+				"left": (120+i*60)+"px"
+			})
+		);
+		id++;
+	}
+	for(var i=180;i<=540;i+=360){
+		$game.append(
+			$("<span class='black_5' id='black_"+id+"'>"+black[5]+"</span>").css({	
+				"top": "180px",
+				"left": i + "px"
+			})
+		);
+		$game.append(
+			$("<span class='red_5' id='red_"+id+"'>"+red[5]+"</span>").css({	
+				"top": "480px",
+				"left": i + "px"
+			})
+		);
+		id++;
+	}
+	for(var i=0;i<5;i++){
+		$game.append(
+			$("<span class='black_6' id='black_"+id+"'>"+black[6]+"</span>").css({	
+				"top": "240px",
+				"left": 120+i*120 + "px"
+			})
+		);
+		$game.append(
+			$("<span class='red_6' id='red_"+id+"'>"+black[6]+"</span>").css({	
+				"top": "420px",
+				"left": 120+i*120 + "px"
+			})
+		);
+		id++;
+	}
+};
+function findPos(left,top){
+	var chess = $("span");
+	for(var i=0;i<chess.length;i++){	
+		var pos = $(chess[i]).offset();
+		if(pos.left==left&&pos.top==top)
+			return true;
+	}
+	return false;
+};
+function judge(left,top){
+	var choosen = $("#"+choosen_id);
+	var cleft = choosen.offset().left;
+	var ctop = choosen.offset().top;
+	if(findPos(left,top)){
+		alert("你可能踩到别人了");
+		return false;
+	}
+	var choosen_class = choosen.attr("class").split('_')[1].split(' ')[0];
+	switch(choosen_class){
+	case "5"://炮
+	case "0"://车
+		if(cleft==left){
+			if(top>ctop){
+				for(var t=ctop+1;t<top;t++){
+					if(findPos(left,t)==true){
+						return false;
+					}
+				}
+				return true;
+			}
+			else{
+				for(var t=ctop-1;t>top;t--){
+					if(findPos(left,t)==true){
+						return false;
+					}
+				}
+				return true;
+			}
+		}
+		else if(ctop==top){
+			if(left>cleft){
+				for(var l=cleft+1;l<left;l++){
+					if(findPos(l,top)==true){
+						return false;
+					}
+				}
+				return true;
+			}
+			else{
+				for(var l=cleft-1;l>left;l--){
+					if(findPos(l,top)==true){
+						return false;
+					}
+				}
+				return true;
+			}
+		}
+		else{
+			return false;
+		}
+	case "1"://马
+		var dl = left-cleft;
+		var dt = top-ctop;
+		if(dl==120&&(dt==60||dt==-60)){
+			return !findPos(cleft+60,ctop);
+		}
+		else if(dl==-120&&(dt==60||dt==-60)){
+			return !findPos(cleft-60,ctop);
+		}
+		else if((dl==60||dl==-60)&&dt==120){
+			return !findPos(cleft,ctop+60);
+		}
+		else if((dl==60||dl==-60)&&dt==-120){
+			return !findPos(cleft,ctop-60);
+		}
+		else{
+			return false;
+		}
+	case "2"://象
+		var color = choosen_id.split('_')[0];
+		if(color=="black"&&top>300){
+			return false;
+		}
+		else if(color=="red"&&top<360){
+			return false;
+		}
+		else{
+			var dl = left-cleft;
+			var dt = top-ctop;
+			if(dl==120&&dt==120){
+				return !findPos(cleft+60,ctop+60);
+			}
+			else if(dl==120&&dt==-120){
+				return !findPos(cleft+60,ctop-60);
+			}
+			else if(dl==-120&&dt==120){
+				return !findPos(cleft-60,ctop+60);
+			}
+			else if(dl==-120&&dt==-120){
+				return !findPos(cleft-60,ctop-60);
+			}
+			else{
+				return false;
+			}
+		}
+	case "3"://士
+		var color = choosen_id.split('_')[0];
+		if(left<300||left>420){
+			return false;
+		}
+		else if(color=="black"&&top>180){
+			return false;
+		}
+		else if(color=="red"&&top<480){
+			return false;
+		}
+		else{
+			var dl = left-cleft;
+			var dt = top-ctop;
+			return (dl==60||dl==-60)&&(dt==60||dt==-60);
+		}
+	case "4"://将
+		var color = choosen_id.split('_')[0];
+		if(left<300||left>420){
+			return false;
+		}
+		else if(color=="black"&&top>180){
+			return false;
+		}
+		else if(color=="red"&&top<480){
+			return false;
+		}
+		else{
+			var dl = left-cleft;
+			var dt = top-ctop;
+			return ((dl==60||dl==-60)&&dt==0)||((dt==60||dt==-60)&&dl==0);
+		}
+	case "6"://卒
+		var color = choosen_id.split('_')[0];
+		var dl = left-cleft;
+		var dt = top-ctop;
+		if(color=="black"){
+			if(ctop>300){
+				return ((dl==60||dl==-60)&&dt==0)||(dt==60&&dl==0);
+			}
+			else{
+				return (dt==60&&dl==0);
+			}
+		}
+		else{
+			if(ctop<360){
+				return ((dl==60||dl==-60)&&dt==0)||(dt==-60&&dl==0);
+			}
+			else{
+				return (dt==-60&&dl==0);
+			}
+		}
+	default: 
+		alert("出错了");
+		return false;
+	}
+};
+function kill(x){
+	var choosen = $("#"+choosen_id);
+	var cleft = choosen.offset().left;
+	var ctop = choosen.offset().top;
+	var current = $("#"+x);
+	var left = current.offset().left;
+	var top = current.offset().top;
+	var eat = true;
+
+	var choosen_class = choosen.attr("class").split('_')[1].split(' ')[0];
+	switch(choosen_class){
+	case "0":
+		if(cleft==left){
+			if(top>ctop){
+				for(var t=ctop+1;t<top;t++){
+					if(findPos(left,t)==true){
+						eat = false;
+					}
+				}
+			}
+			else{
+				for(var t=ctop-1;t>top;t--){
+					if(findPos(left,t)==true){
+						eat = false;
+					}
+				}
+			}
+		}
+		else if(ctop==top){
+			if(left>cleft){
+				for(var l=cleft+1;l<left;l++){
+					if(findPos(l,top)==true){
+						eat = false;
+					}
+				}
+			}
+			else{
+				for(var l=cleft-1;l>left;l--){
+					if(findPos(l,top)==true){
+						eat = false;
+					}
+				}
+			}
+		}
+		else{
+			eat = false;
+		}
+		break;
+	case "1":
+		var dl = left-cleft;
+		var dt = top-ctop;
+		if(dl==120&&(dt==60||dt==-60)){
+			eat = !findPos(cleft+60,ctop);
+		}
+		else if(dl==-120&&(dt==60||dt==-60)){
+			eat = !findPos(cleft-60,ctop);
+		}
+		else if((dl==60||dl==-60)&&dt==120){
+			eat = !findPos(cleft,ctop+60);
+		}
+		else if((dl==60||dl==-60)&&dt==-120){
+			eat = !findPos(cleft,ctop-60);
+		}
+		else{
+			eat = false;
+		}
+		break;
+	case "2":
+		var color = choosen_id.split('_')[0];
+		if(color=="black"&&top>300){
+			eat = false;
+		}
+		else if(color=="red"&&top<360){
+			eat = false;
+		}
+		else{
+			var dl = left-cleft;
+			var dt = top-ctop;
+			if(dl==120&&dt==120){
+				eat = !findPos(cleft+60,ctop+60);
+			}
+			else if(dl==120&&dt==-120){
+				eat = !findPos(cleft+60,ctop-60);
+			}
+			else if(dl==-120&&dt==120){
+				eat = !findPos(cleft-60,ctop+60);
+			}
+			else if(dl==-120&&dt==-120){
+				eat = !findPos(cleft-60,ctop-60);
+			}
+			else{
+				eat = false;
+			}
+		}
+		break;
+	case "3":
+		var color = choosen_id.split('_')[0];
+		if(left<300||left>420){
+			eat = false;
+		}
+		else if(color=="black"&&top>180){
+			eat = false;
+		}
+		else if(color=="red"&&top<480){
+			eat = false;
+		}
+		else{
+			var dl = left-cleft;
+			var dt = top-ctop;
+			eat = (dl==60||dl==-60)&&(dt==60||dt==-60);
+		}
+		break;
+	case "4":
+		var color = choosen_id.split('_')[0];
+		if(left<300||left>420){
+			eat = false;
+		}
+		else if(color=="black"&&top>180){
+			eat = false;
+		}
+		else if(color=="red"&&top<480){
+			eat = false;
+		}
+		else{
+			var dl = left-cleft;
+			var dt = top-ctop;
+			eat = ((dl==60||dl==-60)&&dt==0)||((dt==60||dt==-60)&&dl==0);
+		}
+		break;
+	case "5":
+		var mid = 0;
+		if(cleft==left){
+			if(top>ctop){
+				for(var t=ctop+1;t<top;t++){
+					if(findPos(left,t)==true)
+						mid++;
+				}
+			}
+			else{
+				for(var t=ctop-1;t>top;t--){
+					if(findPos(left,t)==true)
+						mid++;
+				}
+			}
+			eat = (mid==1);
+		}
+		else if(ctop==top){
+			if(left>cleft){
+				for(var l=cleft+1;l<left;l++){
+					if(findPos(l,top)==true)
+						mid++;
+				}
+			}
+			else{
+				for(var l=cleft-1;l>left;l--){
+					if(findPos(l,top)==true)
+						mid++;
+				}
+			}
+			eat = (mid==1);
+		}
+		else{
+			eat = false;
+		}
+		break;
+	case "6":
+		var color = choosen_id.split('_')[0];
+		var dl = left-cleft;
+		var dt = top-ctop;
+		if(color=="black"){
+			if(ctop>300){
+				eat = ((dl==60||dl==-60)&&dt==0)||(dt==60&&dl==0);
+			}
+			else{
+				eat = (dt==60&&dl==0);
+			}
+		}
+		else{
+			if(ctop<360){
+				eat = ((dl==60||dl==-60)&&dt==0)||(dt==-60&&dl==0);
+			}
+			else{
+				eat = (dt==-60&&dl==0);
+			}
+		}
+		break;
+	default: 
+		alert("出错了");
+		eat = false;
+	}	
+	if(eat){
+		var current_class = current.attr("class").split('_');
+		if(current_class[1].split(' ')[0]=="4"){
+			alert(choosen_id.split('_')[0]+"方胜");
+		}
+		else{
+			current.css({"display":"none"});
+			choosen.css({
+				"left": left + "px",
+				"top": top + "px"
+			}).removeClass("choosen");
+			choosen_id=(choosen_id.split('_')[0]=="red")?"black_99":"red_99";
+		}
+	}
+	else{
+		alert("不能杀");
+	}
+};
+function position(x,y){
+	var loc = new Array();
+	if(x<120) loc[0]=120;
+	else if(x>600) loc[0]=600;
+	else{ 
+		for(var i=120;i<=x;i+=60);
+		loc[0] =(i-x<30)?i:i-60;
+	}
+	if(y<60) loc[1]=60;
+	else if(y>600) loc[1]=600;
+	else{ 
+		for(var i=60;i<=y;i+=60);
+		loc[1] =(i-y<30)?i:i-60;
+	}
+	return loc;
+};
+$(function(){
+	draw_map();
+	draw_soldier();
+	choosen_id = "red_99";
+	$("span").click(function(){
+		var current_id = $(this).attr("id");
+		var choosen = choosen_id.split('_');
+		if(choosen[0]==current_id.split("_")[0]){
+			if(choosen[1]!=99){
+				$("#"+choosen_id).removeClass("choosen");
+			}
+			choosen_id = current_id;
+		}
+		else if(choosen[1]!=99){
+			kill(current_id);
+		}
+		else{
+			alert("对手回合");
+		}
+		$("#"+choosen_id).addClass("choosen");
+	});
+	$("table.map").click(function(event){
+		var choosen = choosen_id.split('_');
+		if(choosen[1]!="99"){
+			var loc = position(event.pageX,event.pageY);
+			var res = judge(loc[0],loc[1]);
+			if(res){
+				$("#"+choosen_id).css({
+					"left": loc[0] + "px",
+					"top": loc[1] + "px"
+				}).removeClass("choosen");
+				choosen_id=(choosen[0]=="red")?"black_99":"red_99";
+			}
+			else{
+				alert("无效");
+			}
+		}
+	});
+});
+</script>
+<style>
+html{
+padding: 60px 120px;
+}
+table.map{
+border: 1px solid red;
+border-collapse: collapse;
+}
+table.map td{
+width: 60px;
+height: 60px;
+border: 1px solid red;
+z-index: 0;
+}
+table.map td.border{
+border: none;
+}
+span{
+position: absolute;
+background-color: SandyBrown;
+border-radius: 60px;
+font-size: 30px;
+font-family: "楷体";
+padding: 10px;
+cursor: pointer;
+}
+span.red_0,span.red_1,span.red_2,span.red_3,span.red_4,span.red_5,span.red_6{
+color: Red;
+}
+span.choosen{
+color: Yellow;
+}
+</style>
+</head>
+<body>
+<div class="game">
+<table class="map"></table>
+</div>
+</body>
+</html>
