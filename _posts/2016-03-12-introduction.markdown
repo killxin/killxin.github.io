@@ -10,5 +10,5 @@ categories: jekyll update
 
 简陋的简历和中国象棋：[简历][resume] [象棋][chinachess]
 
-[resume]:/web/resume.html
-[chinachess]:/web/chinachess.html
+[resume]:/src/resume.html
+[chinachess]:/src/chinachess.html
