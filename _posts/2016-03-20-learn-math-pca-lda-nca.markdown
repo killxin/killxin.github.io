@@ -2,7 +2,7 @@
 layout: post
 title:  "我要学数学—PCA,LDA,NCA"
 categories: jekyll update
-tags: "数据挖掘"
+tags: data-mining
 ---
 ## 一、PCA主成分分析法
 *****
@@ -174,6 +174,8 @@ Obtaining a gradient for A means that it can be found with an iterative solver s
 <http://www.cnblogs.com/zhangchaoyang/articles/2644095.html>
 
 <http://www.cs.toronto.edu/~hinton/absps/nca.pdf>
+
+
 
 
 
