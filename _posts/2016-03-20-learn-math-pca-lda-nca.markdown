@@ -2,9 +2,11 @@
 layout: post
 title:  "我要学数学—PCA,LDA,NCA"
 categories: jekyll update
+tags: "数据挖掘"
 ---
 ## 一、PCA主成分分析法
 *****
+
 一般的，有M个N维向量，将其变为由R个N维向量表示的新空间中，先将R个基按行组成矩阵A，然后将向量按列组成矩阵B，AB就是变换结果
 
 # 1、在维规约的过程中，试图选择这样的一组基
@@ -50,21 +52,23 @@ C是一个对称矩阵，其对角线分别是各个字段的方差，cij=cji为
 
 6）Y=PX即为降维到k维后的数据
 
+
 ## 二、LDA线性判别分析法
 *****
+
 LDA的目标是，将带上标签的数据点，投影到维度更低的空间中，使得不同类别之间的距离远，同一类别之中的距离近
 
 # 1、二值分类
 
 将样例数据分类，就需要找到一个线性函数，我们将其表示为向量w，y=w^Tx即为将样本数据投影到w上的点
 
-1）定义每类样例的均值点（向量）
+1）wi类样例的均值点（向量）
 
 ![公式2.1.1](/src/PLN_2.1.1.png)
 
 wi表示第i类元素的集合，ni表示wi中元素的个数，x即为样例，是一个向量，所以ui是一个向量
 
-2）定义投影到w后的均值点（数值）
+2）wi类样例投影到w后的均值点（标量）
 
 ![公式2.1.2](/src/PLN_2.1.2.png)
 
@@ -72,17 +76,17 @@ wi表示第i类元素的集合，ni表示wi中元素的个数，x即为样例，
 
 ![公式2.1.3](/src/PLN_2.1.3.png)
 
-4）所有样例投影到w后的均值点
+4）所有样例投影到w后的均值点（标量）
 
 ![公式2.1.4](/src/PLN_2.1.4.png)
 
-5）投影之后wi内部的方差（数值）
+5）投影之后wi内部的方差（标量）
 
 ![公式2.1.5](/src/PLN_2.1.5.png)
 
 这里希望类内部的方差尽量小
 
-6）投影之后类之间的方差（数值）
+6）投影之后类之间的方差（标量）
 
 ![公式2.1.6](/src/PLN_2.1.6.png)
 
@@ -106,8 +110,10 @@ c表示数据一共可划分为c类，这里希望类之间的方差尽量大
 
 由上述方法最多可以得到c-1个wi，每一个wi均可以将样例数据在其上做投影，因此记w=\[w1\|w2\|……\|wk\](k<=c-1)。由于要求特征向量的矩阵不对称，所以w可能不正交。
 
+
 ## 三、NDA相邻成分分析
 *****
+
 # 1、K最邻近算法（KNN)
 
 如果一个样本在特征空间中的k个最相似(即特征空间中最邻近)的样本中的大多数属于某一个类别，则该样本也属于这个类别
@@ -118,13 +124,25 @@ NCA是对KNN的改进
 
 # 2、Distance Metric
 
-首先定义Distance Metric，即两点之间距离的度量方式。
+首先定义Distance Metric，即两点之间距离的度量方式
 
 ![公式3.2.1](/src/PLN_3.2.1.png)
 
 ![公式3.2.2](/src/PLN_3.2.2.png)
 
-A是待优化的对象，通过A作用于x，y两点的坐标来度量x，y之间的距离。
+A是待优化的对象，通过A作用于x，y两点的坐标来度量x，y之间的距离
+
+在这里，需要介绍一下向量范数的概念
+
+向量范数是对三维欧式空间中向量长度概念的推广，距离的度量可以有多种定义方案，上述度量方案可视为一种R^n空间的向量范数：
+
+![公式3.2.3](/src/PLN_3.2.3.png)
+
+我们有如下证明：
+
+![公式3.2.4](/src/PLN_3.2.4.png)
+
+类似的，通过矩阵Q，我们定义了一个向量范数来度量两个数据点（向量）的距离
 
 # 3、选择邻居的规则（随机选择）
 
@@ -144,17 +162,18 @@ pi表示点i被正确分类的概率，Ci表示与i同类的点的集合：
 
 ![公式3.3.5](/src/PLN_3.3.5.png)
 
->Obtaining a gradient for A means that it can be found with an iterative solver such as conjugate gradient descent.
+Obtaining a gradient for A means that it can be found with an iterative solver such as conjugate gradient descent.
 
 ## 四、参考资料
 *****
-http://blog.csdn.net/xiaojidan2011/article/details/11595869
 
-http://www.cnblogs.com/LeftNotEasy/archive/2011/01/08/lda-and-pca-machine-learning.html
+<http://blog.csdn.net/xiaojidan2011/article/details/11595869>
 
-http://www.cnblogs.com/zhangchaoyang/articles/2644095.html
+<http://www.cnblogs.com/LeftNotEasy/archive/2011/01/08/lda-and-pca-machine-learning.html>
 
-http://www.cs.toronto.edu/~hinton/absps/nca.pdf
+<http://www.cnblogs.com/zhangchaoyang/articles/2644095.html>
+
+<http://www.cs.toronto.edu/~hinton/absps/nca.pdf>
 
 
 
