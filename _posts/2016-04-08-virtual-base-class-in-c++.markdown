@@ -1,187 +1,205 @@
 ---
 layout: post
-title:  "我要学数学—PCA,LDA,NCA"
+title:  "C++中的虚基类"
 categories: jekyll update
 tags: data-mining
 ---
-## 一、PCA主成分分析法
+## 一、虚基类的概念
 *****
 
-一般的，有M个N维向量，将其变为由R个N维向量表示的新空间中，先将R个基按行组成矩阵A，然后将向量按列组成矩阵B，AB就是变换结果
+当在多条继承路径上有一个公共的基类,在这些路径中的某几条汇合处，这个公共的基类就会产生多个实例(或多个副本)，若只想保存这个基类的一个实例，可以将这个公共基类说明为虚基类。
 
-# 1、在维规约的过程中，试图选择这样的一组基
+在继承中产生歧义的原因有可能是继承类继承了基类多次，从而产生了多个拷贝，即不止一次的通过多个路径继承类在内存中创建了基类成员的多份拷贝。虚基类的基本原则是在内存中只有基类成员的一份拷贝。这样，通过把基类继承声明为虚拟的，就只能继承基类的一份拷贝，从而消除歧义。用virtual限定符把基类继承说明为虚拟的。
 
-1）希望投影后的投影值尽量分散，即投影后，字段的方差尽可能大
- 
-![公式1.1.1](/src/PLN_1.1.1.png)
+虚基类与虚函数的区别在于，虚基类可以被实例化，用来解决多继承中的冲突问题，含有虚函数的类不可以被实例化，用来支持多态。
 
-2）不希望第二个方向和第一个方向之间存在线性相关性，即使得投影后各字段协方差为0
+注：下面所述的所有实验均在G++下完成。
 
-![公式1.1.2](/src/PLN_1.1.2.png)
-
-# 2、协方差矩阵
-
-![公式1.2.1](/src/PLN_1.2.1.png)，
-![公式1.2.2](/src/PLN_1.2.2.png)
-
-C是一个对称矩阵，其对角线分别是各个字段的方差，cij=cji为i和j字段的协方差
-
-# 3、协方差矩阵的对角化
-
-设P为一组基按行组成的矩阵，Y=PX为X对P做基变换后的数据，设D为Y的协方差矩阵
-
-![公式1.3.1](/src/PLN_1.3.1.png)
-
-我们的优化目标是找到P，D为对角矩阵且对角线元素从大到小排列，P的前K行的转置就是要求的基。
-
-已知若A是实对称矩阵，则存在同阶正交矩阵Q使得Q^TAQ是实对角矩阵
-
-# 4、算法步骤
-
-设有m条n维数据
-
-1）将原始数据按列组成n行m列矩阵X
-
-2）将X的每一行（代表一个属性字段）进行零均值化，即减去这一行的均值
-
-3）求出协方差矩阵C
-
-4）求出协方差矩阵的特征值及对应的特征向量
-
-5）将特征向量按对应特征值大小从上到下按行排列成矩阵，取前k行组成矩阵P
-
-6）Y=PX即为降维到k维后的数据
-
-
-## 二、LDA线性判别分析法
+## 二、“深度探索C++对象模型”中的一个实验
 *****
 
-LDA的目标是，将带上标签的数据点，投影到维度更低的空间中，使得不同类别之间的距离远，同一类别之中的距离近
+<pre><code>
+class X { };
+class Y :public virtual X { };
+class Z :public virtual X { };
+class A :public Y, public Z { };
 
-# 1、二值分类
+cout << sizeof(X) << endl; //1
+cout << sizeof(Y) << endl; //8
+cout << sizeof(Z) << endl; //8
+cout << sizeof(A) << endl; //16
+</code></pre>
 
-将样例数据分类，就需要找到一个线性函数，我们将其表示为向量w，y=w^Tx即为将样本数据投影到w上的点
+由于X是一个空虚类，所以为了惟一的标识X的一个实例，需要为其添加1字节的字符来在内存中占据一块空间，从而可以以其内存地址惟一的标记类的一个实例。
 
-1）wi类样例的均值点（向量）
+Y，Z以虚继承的方式继承自A，在C++的编译器实现时，会自动为Y，Z分配一个指针，在64位系统中，一个指针8字节，由于此时Y，Z已不是空虚类，所以不再为其分配1字节的占位字符。
 
-![公式2.1.1](/src/PLN_2.1.1.png)
+A继承自Y，Z，会对Y（记为py），Z（记为pz）中的指针进行拷贝，所以A中有两个继承自Y（记为apy），Z（记为apz）的指针，共16字节。
 
-wi表示第i类元素的集合，ni表示wi中元素的个数，x即为样例，是一个向量，所以ui是一个向量
+现在的问题是，Y，Z，A中的指针究竟有什么用？为此，我做了如下两个实验，暂时得到的结论是：该指针在Y，Z中用处未知，在A中用于寻址。
 
-2）wi类样例投影到w后的均值点（标量）
-
-![公式2.1.2](/src/PLN_2.1.2.png)
-
-3）所有样例的均值点（向量）
-
-![公式2.1.3](/src/PLN_2.1.3.png)
-
-4）所有样例投影到w后的均值点（标量）
-
-![公式2.1.4](/src/PLN_2.1.4.png)
-
-5）投影之后wi内部的方差（标量）
-
-![公式2.1.5](/src/PLN_2.1.5.png)
-
-这里希望类内部的方差尽量小
-
-6）投影之后类之间的方差（标量）
-
-![公式2.1.6](/src/PLN_2.1.6.png)
-
-c表示数据一共可划分为c类，这里希望类之间的方差尽量大
-
-于是我们记：
-
-![公式2.1.7](/src/PLN_2.1.7.png)
-
-![公式2.1.8](/src/PLN_2.1.8.png)
-
-拉格朗日乘子法，限制
-
-![公式2.1.9](/src/PLN_2.1.9.png)
-
-![公式2.1.10](/src/PLN_2.1.10.png)
-
-![公式2.1.11](/src/PLN_2.1.11.png)
-
-# 2、k-分类
-
-由上述方法最多可以得到c-1个wi，每一个wi均可以将样例数据在其上做投影，因此记w=\[w1\|w2\|……\|wk\](k<=c-1)。由于要求特征向量的矩阵不对称，所以w可能不正交。
-
-
-## 三、NCA相邻成分分析
+## 三、查看Y，Z，A的实例中的内容
 *****
 
-# 1、K最邻近算法（KNN)
+<pre><code>
+class X { public: unsigned long x = 5; };
+class Y :public virtual X { public: unsigned long y = 6; };
+class Z :public virtual X { public: unsigned long z = 7; };
+class A :public Y, public Z { public: unsigned long a = 8; };
 
-如果一个样本在特征空间中的k个最相似(即特征空间中最邻近)的样本中的大多数属于某一个类别，则该样本也属于这个类别
+cout << sizeof(X) << endl; //8
+cout << sizeof(Y) << endl; //24
+cout << sizeof(Z) << endl; //24
+cout << sizeof(A) << endl; //48
 
-缺点：计算量较大，因为对每一个待分类的样本都要计算它到全体已知样本的距离，才能求得它的K个最近邻点；模型设计时较难确定“最邻近”的概念
+X x;
+Y y;
+Z z;
+A a;
+	
+cout << &y << endl; //0x7ffcbc944490
+cout << &z << endl; //0x7ffcbc9444b0
+cout << &a << endl; //0x7ffcbc9444d0
 
-NCA是对KNN的改进
+cout << hex << ((unsigned long*)(&y))[0] << endl; //4012b8
+cout << hex << ((unsigned long*)(&y))[1] << endl; //6
+cout << hex << ((unsigned long*)(&y))[2] << endl; //5
 
-# 2、Distance Metric
+cout << hex << ((unsigned long*)(&z))[0] << endl; //401298
+cout << hex << ((unsigned long*)(&z))[1] << endl; //7
+cout << hex << ((unsigned long*)(&z))[2] << endl; //5
 
-首先定义Distance Metric，即两点之间距离的度量方式
+cout << hex << ((unsigned long*)(&a))[0] << endl; //4011f8
+cout << hex << ((unsigned long*)(&a))[1] << endl; //7
+cout << hex << ((unsigned long*)(&a))[2] << endl; //401210
+cout << hex << ((unsigned long*)(&a))[3] << endl; //6
+cout << hex << ((unsigned long*)(&a))[4] << endl; //8
+cout << hex << ((unsigned long*)(&a))[5] << endl; //5
 
-![公式3.2.1](/src/PLN_3.2.1.png)
+cout << hex << (((unsigned long**)(&y))[0])[0] << endl; //4012b8
+cout << hex << (((unsigned long**)(&z))[0])[0] << endl;	//401298
+cout << hex << (((unsigned long**)(&a))[0])[0] << endl; //18
+cout << hex << (((unsigned long**)(&a))[2])[0] << endl; //0
 
-![公式3.2.2](/src/PLN_3.2.2.png)
+cout << &(y.x) << endl; //0x7ffcbc9444a0
+cout << &(z.x) << endl; //0x7ffcbc9444c0
+cout << &(a.x) << endl; //0x7ffcbc9444f8
+</code></pre>
 
-A是待优化的对象，通过A作用于x，y两点的坐标来度量x，y之间的距离
+通过上面的实验我们隐约可以看到，在Y，Z中，数据的布局为，
 
-在这里，需要介绍一下向量范数的概念
+py（pz），其指向的内存区域的值是这个地址本身，我认为这是表示在Y，Z的实例中不用重新寻址
 
-向量范数是对三维欧式空间中向量长度概念的推广，距离的度量可以有多种定义方案，上述度量方案可视为一种R^n空间的向量范数：
+y（z）
 
-![公式3.2.3](/src/PLN_3.2.3.png)
+x
 
-我们有如下证明：
+在A中，数据的布局为，
 
-![公式3.2.4](/src/PLN_3.2.4.png)
+apz
 
-类似的，通过矩阵Q，我们定义了一个向量范数来度量两个数据点（向量）的距离
+z
 
-# 3、选择邻居的规则（随机选择）
+apy
 
-每个点i选择另一个点j作为其邻居的概率为：
+y
 
-![公式3.3.1](/src/PLN_3.3.1.png)
+a
 
-pi表示点i被正确分类的概率，Ci表示与i同类的点的集合：
+x
 
-![公式3.3.2](/src/PLN_3.3.2.png)
+其中apz指向的区域的值为0x18，我觉得这表示的是A中继承自Y的数据相对于首地址的偏移量，记录该偏移量的原因在于，在下面的场景中：
 
-![公式3.3.3](/src/PLN_3.3.3.png)
+<pre><code>
+A a;
+Y *p = &a;
+cout << p->y;
+cout << p->x;
+</code></pre>
 
-优化A，使得f(A)取得最大值，此时划分正确的概率最大，也就是被正确分类的样本个数的期望值最大，为了便于计算：
+我猜想，在当前特定的结构中，发现Z的数据和X的数据分别位于内存布局的两端，容易寻址，而Y的数据需要记录相对偏移量才可以找到，为了验证此猜想，继续做第三个实验。
 
-![公式3.3.4](/src/PLN_3.3.4.png)
-
-![公式3.3.5](/src/PLN_3.3.5.png)
-
-Obtaining a gradient for A means that it can be found with an iterative solver such as conjugate gradient descent.
-
-## 四、参考资料
+## 四、新增类H
 *****
 
-<http://blog.csdn.net/xiaojidan2011/article/details/11595869>
+<pre><code>
+class X { public: unsigned long x = 5; };
+class Y :public virtual X { public: unsigned long y = 6; };
+class Z :public virtual X { public: unsigned long z = 7; };
+class H :public virtual X { public: unsigned long h = 8; };
+class A :public Y, public Z, public H { public: unsigned long a = 9; };
 
-<http://www.cnblogs.com/LeftNotEasy/archive/2011/01/08/lda-and-pca-machine-learning.html>
+cout << sizeof(X) << endl; //8
+cout << sizeof(Y) << endl; //24
+cout << sizeof(Z) << endl; //24
+cout << sizeof(H) << endl; //24
+cout << sizeof(A) << endl; //64
 
-<http://www.cnblogs.com/zhangchaoyang/articles/2644095.html>
+X x;
+Y y;
+Z z;
+H h;
+A a;
+	
+cout << &y << endl; //0x7fff11918590
+cout << &z << endl; //0x7fff119185b0
+cout << &h << endl; //0x7fff119185d0
+cout << &a << endl; //0x7fff119185f0
 
-<http://www.cs.toronto.edu/~hinton/absps/nca.pdf>
+cout << hex << ((unsigned long*)(&y))[0] << endl; //4015a8
+cout << hex << ((unsigned long*)(&y))[1] << endl; //6
+cout << hex << ((unsigned long*)(&y))[2] << endl; //5
 
+cout << hex << ((unsigned long*)(&z))[0] << endl; //401588
+cout << hex << ((unsigned long*)(&z))[1] << endl; //7
+cout << hex << ((unsigned long*)(&z))[2] << endl; //5
 
+cout << hex << ((unsigned long*)(&h))[0] << endl; //401568
+cout << hex << ((unsigned long*)(&h))[1] << endl; //8
+cout << hex << ((unsigned long*)(&h))[2] << endl; //5
 
+cout << hex << ((unsigned long*)(&a))[0] << endl; //401478
+cout << hex << ((unsigned long*)(&a))[1] << endl; //6
+cout << hex << ((unsigned long*)(&a))[2] << endl; //401490
+cout << hex << ((unsigned long*)(&a))[3] << endl; //7
+cout << hex << ((unsigned long*)(&a))[4] << endl; //4014a8
+cout << hex << ((unsigned long*)(&a))[5] << endl; //8
+cout << hex << ((unsigned long*)(&a))[6] << endl; //9
+cout << hex << ((unsigned long*)(&a))[7] << endl; //5
 
+cout << hex << (((unsigned long**)(&y))[0])[0] << endl; //4015a8
+cout << hex << (((unsigned long**)(&z))[0])[0] << endl; //401588
+cout << hex << (((unsigned long**)(&a))[0])[0] << endl; //0x28
+cout << hex << (((unsigned long**)(&a))[2])[0] << endl; //0x18
+cout << hex << (((unsigned long**)(&a))[4])[0] << endl; //0x0
+</code></pre>
 
+上述实验中，我们得到A的内存布局，
 
+apy
 
+y
 
+apz
+
+z
+
+aph
+
+h
+
+a
+
+x
+
+与实验二相比，父类摆放的顺序发生了变化，但是仍在apy中记录了h的偏移量，在apz中记录了z的偏移量，所以可以看到，A中继承的指针起到了在A中寻找父类数据偏移量的作用，有资料称其为通过中间层寻址。
+
+## 五、参考资料
+*****
+
+深度探索C++对象模型 作者: [美] Stanley B. Lippman 译者: 侯捷 出版年: 2001-5 出版社: 华中科技大学出版社
+
+<http://blog.csdn.net/jiangnanyouzi/article/details/3721091>
 
 
 
