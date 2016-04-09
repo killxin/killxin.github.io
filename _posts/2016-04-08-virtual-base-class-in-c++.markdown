@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "C++中的虚基类"
+title:  "探索g++如何处理C++中的虚基类"
 categories: jekyll update
 tags: data-mining
 ---
@@ -200,6 +200,8 @@ x
 [深度探索C++对象模型](https://book.douban.com/subject/1091086/)
 
 <http://blog.csdn.net/jiangnanyouzi/article/details/3721091>
+
+[谈VC++对象模型](http://www.cnblogs.com/heyonggang/p/3333054.html)
 
 
 
