@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "探索g++如何处理C++中的虚基类"
+title:  "G++中的虚基类"
 categories: jekyll update
 tags: data-mining
 ---
