@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Phaser in Action——GitHub信息展示和坦克大战"
+title:  "GitHub信息展示和坦克大战"
 categories: jekyll update
 tags: phaser in action
 ---
