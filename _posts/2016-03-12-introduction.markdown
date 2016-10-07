@@ -8,7 +8,9 @@ categories: jekyll update
 
 今年我22岁，往后的十年里我一定会越走越远，希望你来到这里，与我分享奇妙的想法。对了，我是厄多斯信徒，想做一名科学家。
 
-简陋的简历和中国象棋：[简历][resume] [象棋][chinachess]
+简陋的简历和中国象棋：[简历][resume] [象棋][chinachess] [GitHub信息展示][player] [坦克大战][tanks]
 
 [resume]:/src/resume.html
 [chinachess]:/src/chinachess.html
+[player]:/src/phaser/player.html
+[tanks]:/src/phaser/tanks.html

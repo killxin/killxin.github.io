@@ -14,15 +14,19 @@ Phaser吸引我的的地方在于提供了685个example，通过看源码加读�
 
 # GitHub信息展示
 
-[Player][player]参考了phaser提供的 <http://phaser.io/examples/v2/text/display-text-word-by-word> 例子，
+[游戏入口][player] 参考了phaser提供的 <http://phaser.io/examples/v2/text/display-text-word-by-word> 例子，
 
 利用了game.time.events.repeat实现了将文字以打字的方式呈现出来。
 
 # 坦克大战
 
-[Tanks][tanks]参考了<http://phaser.io/tutorials/coding-tips-001>,增加了对坦克移动的控制，实现了两个玩家对战，
+[游戏入口][tanks] 参考了<http://phaser.io/tutorials/coding-tips-001>,增加了对坦克移动的控制，实现了两个玩家对战，
 
 核心在于对phaser提供的Phaser.Physics.ARCADE的使用，以及响应用户输入，控制页面展示。
+
+左边玩家使用方向键控制移动和炮台，shift控制发射，右边玩家使用wasd控制移动和炮台，q控制发射。
+
+欢迎修改！
 
 [player]:/src/phaser/player.html
 [tanks]:/src/phaser/tanks.html
